@@ -1,0 +1,41 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:2.3.1.RELEASE")
+  }
+}
+
+plugins {
+  id "au.com.dius.pact" version "4.1.7"
+  id "com.github.psxpaul.execfork" version "0.1.13"
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+dependencies {
+  compile("org.springframework.boot:spring-boot-starter-web") {
+    exclude module: "spring-boot-starter-tomcat"
+  }
+  compile("org.springframework.boot:spring-boot-starter-jetty")
+  compile("org.springframework.boot:spring-boot-starter-actuator")
+}
+
+springBoot {
+  mainClassName = 'au.com.dius.pactworkshop.springbootprovider.MainApplication'
+  version = '1.2.0'
+}
+
+task startProvider(type: com.github.psxpaul.task.JavaExecFork, dependsOn: 'classes') {
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'au.com.dius.pactworkshop.springbootprovider.MainApplication'
+  jvmArgs = [ '-Dserver.port=8080', '-Dspring.profiles.active=test' ]
+  standardOutput = "$buildDir/springboot.log"
+  errorOutput = "$buildDir/springboot-error.log"  
+  waitForPort = 8080
+  timeout = 90
+}
+
+
