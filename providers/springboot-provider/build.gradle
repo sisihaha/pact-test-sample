@@ -38,4 +38,19 @@ task startProvider(type: com.github.psxpaul.task.JavaExecFork, dependsOn: 'class
   timeout = 90
 }
 
+pact {
+  serviceProviders {
+    'Our Provider' {
+      port = 8080
 
+      startProviderTask = startProvider
+      stateChangeUrl = url('http://localhost:8080/pactStateChange')
+
+      hasPactsFromPactBroker("http://localhost")
+    }
+  }
+  
+  broker {
+    pactBrokerUrl = 'http://localhost'
+  }
+}
